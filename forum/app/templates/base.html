@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block titre %}
+        {{ titre|default("Forum Yolo") }}
+    {% endblock %}
+    </title>
+    <link rel="stylesheet" href="/static/css/bootstrap.css"></head>
+    {% block extra_css %}
+    {% endblock %}
+</head>
+<body>
+{% block content %}
+
+{% endblock %}
+</body>
+</html>
