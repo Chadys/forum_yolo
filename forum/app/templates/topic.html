@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {{ super() }}
+            <h4><a href="/category/{{ cat.id }}">{{ cat.titre|e }}</a>::<a href="/subcategory/{{ sscat.id }}">{{ sscat.titre|e }}</a></h4>
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <th style="text-align: center;">{{ topic.titre|e }}</th>
+                </tr>
+                <tr><td>
+                    <table class="table table-bordered table-striped">
+                        <tr><th style="text-align: center; width: 25%;">User</th>
+                        <th style="text-align: center;">Message</th></tr>
+                        <tr>
+                            <td><strong><a href="/user/{{ topic.user_id }}">
+                                {{ topic.username|e }}
+                            </a></strong></td>
+                            <td><small>
+                                 <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                                    Title : {{ topic.titre|e }}&nbsp;&nbsp;&nbsp;
+                                    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                                    <span class="sr-only">Published on :</span>
+                                    {{ topic.date_creation }}</small><br><br>
+                                    {{ topic.text|e }}<br><br>
+                                    {% if topic.date_creation is not equalto topic.date_modification %}
+                                        <small><small><p class="text-right">Last modified on {{ topic.date_modification }}</p></small></small>
+                                    {% endif %}</td>
+                        </tr>
+                        <tr><td></td><td>
+                            <abbr title="Edit {{ topic.titre|e }}"><a href="/edit_topic/{{ topic.id }}" class="btn btn-default btn-xs" aria-label="edit topic">
+                                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                            </a></abbr>
+                        </td></tr>
+                        {% for com in topic.com %}
+                            <tr>
+                                <td><strong><a href="/user/{{ com.user_id }}">
+                                    {{ com.username|e }}
+                                </a></strong></td>
+                                <td><small>
+                                     <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                                        Title : {{ com.titre|e }}&nbsp;&nbsp;&nbsp;
+                                    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                                    <span class="sr-only">Published on :</span>
+                                    {{ com.date_creation }}</small><br><br>
+                                    {{ com.text|e }}<br><br>
+                                    {% if com.date_creation is not equalto com.date_modification %}
+                                        <small><small><p class="text-right">Last modified on {{ com.date_modification }}</p></small></small>
+                                    {% endif %}</td>
+                            </tr>
+                            <tr><td></td><td>
+                                <abbr title="Edit this comment"><a href="/edit_com/{{ com.id }}" class="btn btn-default btn-xs" aria-label="edit comment">
+                                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                </a></abbr>
+                            </td></tr>
+                        {% endfor %}
+                    </table>
+                </td></tr>
+            </table>
+            <abbr title="Comment"><a href="/add_com/{{ topic.id }}" class="btn btn-primary btn-sm" aria-label="add comment">
+                    <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+            </a></abbr>
+        </div>
+    </div>
+</div>
+{% endblock %}

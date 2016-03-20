@@ -1,0 +1,30 @@
+Admin :
+15
+
+Modo :
+10
+
+User :
+6
+
+None :
+0
+
+
+
+0-read not hidden
+1-navbar for connected
+2-read hidden
+3-write com
+4-create topic
+5-edit one's topic and one's com
+6-view one's edit history
+7-hide one's topic
+8-edit other's topic and other's com
+9-view other's edit history
+10-hide other's topic
+11-ban/deban user
+12-add/edit/delete/hide subcategory
+13-add/edit/delete/hide category
+14-ban/deban modo
+15-change user/modo permission

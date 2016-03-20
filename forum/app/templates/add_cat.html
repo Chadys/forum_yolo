@@ -1,4 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {{ super() }}
+			<form action="" method="post" class="form-horizontal">
+    			<input type="text" name="titre" value="{{ form.titre }}"> {{errors.titre}}<br>
+    			<textarea  name="contenu" value="">{{ form.contenu }} </textarea>{{errors.contenu}} <br>
+    			<input class="btn btn-primary" type="submit" value="Envoyer">
+			</form>
+		</div>
+   	<a href="/" class="btn btn-default">Menu</a>
+   </div>
+</div>
 {% endblock %}

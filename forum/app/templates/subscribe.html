@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {{ super() }}
+            <table style="width: 100%;">
+                <tr><td style="text-align: center;">
+                    <h3>Add a {{type}} to {{ container|e }} :</h3><br>
+                </td></tr>
+                {% if errors %}
+                    <tr><td style="text-align: center;">
+                        <div class="alert alert-danger" role="alert">Some errors have been found, please correct them and try again</div>
+                    </td></tr>
+                {% endif %}
+            </table>
+            <form action="" method="post" class="form-horizontal">
+                <table style="width: 100%;">
+                    <tr><td style="text-align: right; width: 60%;">
+                        <div class="form-group has-success has-feedback">
+                            <label class="control-label" for="title">Title:</label>
+                            <input class="form-control" type="text" name="title" value="{{ form.title|e }}" maxlength="100" placeholder="Title">
+                            <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span></td>
+                        </div>
+                            <td style="text-align: left;">{{errors.title}}
+                    </td></tr>
+                    {% if type in ['topic', 'comment'] %}
+                        <tr><td style="text-align: right;">
+                            <label for="content">Content:</label>
+                            <textarea  name="content" value="{{ form.content|e }}" placeholder="Text">{{ form.content|e }}</textarea>
+                        </td><td style="text-align: left;">
+                        <span class="label label-danger">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            <span class="sr-only">Error:</span>
+                            {{errors.content}}
+                        </span>
+                        </td></tr>
+                    {% endif %}
+                    <tr><td style="text-align: right;">
+                        <input class="btn btn-success" type="submit" value="Add">
+                    </td></tr>
+                </table>
+            </form>
+        </div>
+   </div>
+</div>
+{% endblock %}
