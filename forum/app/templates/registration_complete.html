@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {{ super() }}
+            <br><br><br>
+
+    		<div class="col-xs-3"></div>
+
+    		<div class="col-xs-6">
+    			<div class="alert alert-success text-center" role="alert">
+    				<FONT SIZE="+4"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></FONT><br>
+    				<strong>Congratulation !</strong><br><br>
+    				Your profile has been registered,<br>
+    				you can now log in !
+    			</div>
+    		</div>
+    		<div class="col-xs-3"></div>
+
+            <div class="col-xs-10">
+            	<br><br><br>&nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -6,14 +6,19 @@
         <div class="panel-body">
             {{ super() }}
             <br>
+            <ol class="breadcrumb">
+                <li class="active">{{ cat.titre|e }}</li>
+            </ol>
             <table class="table table-bordered table-striped">
-                <tr>
-                    <th style="text-align: center;"><FONT SIZE="+2">{{ cat.titre|e }}</FONT></th>
-                </tr>
                 {% for sscat in cat.sscats %}
-                    <tr><td><a href="/subcategory/{{ sscat.id }}">
+                <tr>
+                    <td style="text-align: center; vertical-align: middle; width: 3%;">
+                        <p class="text-muted"><span class="glyphicon glyphicon-inbox" aria-hidden="true"></span></p>
+                    </td>
+                    <td><a href="/subcategory/{{ sscat.id }}">
                         <FONT SIZE="+1">{{ sscat.titre|e }}</FONT>
-                    </a></td></tr>
+                    </a></td>
+                </tr>
                 {% endfor %}
             </table>
             <abbr title="Add a subcategory to {{ cat.titre|e }}"><a href="/add_subcategory/{{ cat.id }}" class="btn btn-primary btn-sm" aria-label="add subcategory">

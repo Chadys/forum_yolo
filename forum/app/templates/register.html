@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {{ super() }}
+            <div class="col-xs-2"></div><div class="panel panel-default col-xs-8">
+                <table style="width: 100%;">
+                    <tr><td>
+                        <h3 class="text-center"><strong>Register form</strong></h3><br>
+                    </td></tr>
+                    <tr><td>
+                        <p class="text-muted">* means the field is required</p><br>
+                    </td></tr>
+                </table>
+                <form role="form" method="post" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-xs-2" for="pseudo">* Username:</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" name="pseudo" placeholder="Enter username" value="{{ form.pseudo }}">
+                            </div>
+                            <div class="col-xs-4">
+                                {% if errors.pseudo %}
+                                <p class="text-danger">
+                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                    <span class="sr-only">Error:</span>
+                                    {{ errors.pseudo }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-2" for="email">* Email:</label>
+                            <div class="col-xs-6">
+                                <input type="email" class="form-control" name="email" placeholder="email@example.com" value="{{ form.email }}">
+                            </div>
+                            <div class="col-xs-4">
+                                {% if errors.email %}
+                                <p class="text-danger">
+                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                    <span class="sr-only">Error:</span>
+                                    {{ errors.email }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-2" for="password">* Password:</label>
+                            <div class="col-xs-6">
+                                <input type="password" class="form-control" name="password" placeholder="Enter password">
+                            </div>
+                            <div class="col-xs-4">
+                                {% if errors.password %}
+                                <p class="text-danger">
+                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                    <span class="sr-only">Error:</span>
+                                    {{ errors.password }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-2" for="passwordbis">* Password:</label>
+                            <div class="col-xs-6">
+                                <input type="password" class="form-control" name="passwordbis" placeholder="Please repeat your password">
+                            </div>
+                            <div class="col-xs-4">
+                                {% if errors.passwordbis %}
+                                <p class="text-danger">
+                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                    <span class="sr-only">Error:</span>
+                                    {{ errors.passwordbis }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr class="separator">
+                        <div class="form-group">
+                            <label class="control-label col-xs-2" for="fname">First name:</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" name="fname" placeholder="Enter first name" value="{{ form.fname }}">
+                            </div>
+                            <div class="col-xs-4">
+                                {% if errors.fname %}
+                                <p class="text-danger">
+                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                    <span class="sr-only">Error:</span>
+                                    {{ errors.fname }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-2" for="lname">Last name:</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" name="lname" placeholder="Enter last name" value="{{ form.lname }}">
+                            </div>
+                            <div class="col-xs-4">
+                                {% if errors.lname %}
+                                <p class="text-danger">
+                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                    <span class="sr-only">Error:</span>
+                                    {{ errors.lname }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-2" for="bday">Birth date:</label>
+                            <div class="col-xs-6">
+                                <input type="date" class="form-control" name="bday" placeholder="MM/DD/YYYY" value="{{ form.bday }}">
+                            </div>
+                            <div class="col-xs-4">
+                                {% if errors.bday %}
+                                <p class="text-danger">
+                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                    <span class="sr-only">Error:</span>
+                                    {{ errors.bday }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label  class="control-label col-xs-2" for="sexe">Sexe:</label>
+                            <div class="col-xs-6">
+                                <select class="form-control" name="sexe">
+                                    <option>---</option>
+                                    <option>Agender</option>
+                                    <option>Bigender</option>
+                                    <option>Female</option>
+                                    <option>Genderfluid</option>
+                                    <option>Male</option>
+                                    <option>Other</option>
+                                    <option>Trans female</option>
+                                    <option>Trans male</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <table style="width: 100%;">
+                            <tr><td style="text-align: center;">
+                                <div class="checkbox">
+                                    {% if errors.chart %}
+                                        <div class="alert alert-danger text-center" role="alert">
+                                            <label><input type="checkbox" name="chart" value="accept"> I have read and accepted the inexistant chart</label>
+                                        </div>
+                                    {% else %}
+                                        <label><input type="checkbox" name="chart" value="accept"> I have read and accepted the inexistant chart</label>
+                                    {% endif %}
+                                </div>
+                            </td></tr>
+                            <tr><td>&nbsp;</td></tr>
+                            <tr><td style="text-align: center;">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="glyphicon glyphicon-book" aria-hidden="true"></span> Register
+                                </button>
+                            </td></tr>
+                        </table>
+                </form>
+
+                <table style="width: 100%;">
+                    <tr><td>&nbsp;</td></tr>
+                    <tr><td style="text-align: center;">
+                        <small><a href="/login">Already registered ?</a></small>
+                    </td></tr>
+                </table>
+            </div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

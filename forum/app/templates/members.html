@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {{ super() }}
+            <table class="table table-bordered table-striped">
+                <tr>
+                	<th><p class="text-center"><strong>{{ users|length }} member(s)</p></strong></th>
+                </tr>
+                <tr><td>
+            		<table class="table table-bordered table-striped">
+            			<tr>
+            				<th><p class="text-center">ID</p></th>
+            				<th><p class="text-center">Username</p></th>
+            				<th><p class="text-center">Registered since</p></th>
+            				<th><p class="text-center">Last visit on</p></th>
+            			</tr>
+            			{% for user in users %}
+            			<tr>
+            				<td><p class="text-center">{{ user.id }}</p></td>
+            				<td><a href="/user/{{ user.id }}"><p class="text-center">{{ user.username }}</a></p></td>
+            				<td><p class="text-center">{{ user.date_creation }}</p></td>
+            				<td><p class="text-center">{{ user.date_connection }}</p></td>
+            			</tr>
+            			{% endfor %}
+            		</table>
+                </td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

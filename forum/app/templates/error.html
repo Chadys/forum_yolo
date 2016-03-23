@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {{ super() }}
+            <br><br><br>
+
+    		<div class="col-xs-3"></div>
+
+    		<div class="col-xs-6">
+    			<div class="alert alert-warning text-center" role="alert">
+    				<FONT SIZE="+4"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span></FONT><br>
+    				<strong>ERROR {{ error }}</strong><br><br>
+    				{% if code is equalto 400 %}
+    					You tried to mess with the link, didn't you ?
+    				{% elif code is equalto 401 %}
+    					You need to be authentified to see this page
+                    {% elif code is equalto 403 %}
+                        You don't have the credential necessary to access this page
+                    {% elif code is equalto 404 %}
+                        Error : this error message was not found
+    				{% endif %}
+    			</div>
+    		</div>
+    		<div class="col-xs-3"></div>
+
+            <div class="col-xs-10">
+            	<br><br><br>&nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

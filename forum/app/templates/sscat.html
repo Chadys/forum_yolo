@@ -5,21 +5,34 @@
     <div class="panel panel-default">
         <div class="panel-body">
             {{ super() }}
-            <h4><a href="/category/{{ cat.id }}">{{ cat.titre|e }}</a>::{{ sscat.titre|e }}</h4>
+            <ol class="breadcrumb">
+                <li><a href="/category/{{ cat.id }}">{{ cat.titre|e }}</a></li>
+                <li class="active">{{ sscat.titre|e }}</li>
+            </ol>
             <table class="table table-bordered table-striped">
                 <tr>
-                    <th style="text-align: center;">Topics</th>
+                    <th style="width: 3%;"></th>
+                    <th style="text-align: center;">Discussions</th>
                     <th style="text-align: center; width: 20%;">User</th>
                     <th style="text-align: center; width: 6%;">Messages</th>
                 </tr>
                 {% for topic in sscat.topics %}
-                    <tr><td><a href="/topic/{{ topic.id }}">
-                        {{ topic.titre|e }}
-                    </a></td>
-                	<td style="text-align: center;">
-                        <a href="/user/{{ topic.user_id }}"><strong>{{ topic.username|e }}</strong>
-                    </a></td>
-                	<td style="text-align: center;">{{ topic.nb_com }}</td></tr>
+                    <tr>
+                        <td style="text-align: center; vertical-align: middle;">
+                            <p class="text-muted"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span></p>
+                        </td>
+                        <td><a href="/topic/{{ topic.id }}">
+                            {{ topic.titre|e }}
+                        </a></td>
+                        <td style="text-align: center;">
+                            {% if topic.user_id %}
+                                <a href="/user/{{ topic.user_id }}"><strong>{{ topic.username|e }}</strong></a>
+                            {% else %}
+                                Deleted user
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">{{ topic.nb_com }}</td>
+                    </tr>
                 {% endfor %}
             </table>
             <abbr title="Start a discussion in {{ sscat.titre }}"><a href="/add_topic/{{ sscat.id }}" class="btn btn-primary btn-sm" aria-label="add topic">

@@ -13,6 +13,8 @@
             {% for cat in cats %}
             <table class="table table-bordered table-striped">
                     <tr>
+                        <th style="width: 3%;">
+                        </th>
                         <th style="text-align: center;"><a href="/category/{{ cat.id }}">
                             <FONT SIZE="+0">{{ cat.titre|e }}</FONT>
                         </a></th>
@@ -20,7 +22,10 @@
                     </tr>
                     {% for sscat in cat.sscats %}
                         <tr>
-                            <td><a href="/subcategory/{{ sscat.id }}">
+                            <td style="text-align: center; vertical-align: middle;">
+                                <p class="text-muted"><span class="glyphicon glyphicon-inbox" aria-hidden="true"></span></p>
+                            </td>
+                            <td style="vertical-align: middle;"><a href="/subcategory/{{ sscat.id }}">
                                 {{ sscat.titre|e }}
                             </a></td>
                             <td style="text-align: center; vertical-align: middle;">
@@ -28,9 +33,14 @@
                                     {{ sscat.der_msg.titre|e }}<br>
                                 </a>
                                 {{ sscat.der_msg.date }}<br>
-                                <a href="/user/{{ sscat.der_msg.user_id }}">
+                                {% if sscat.der_msg.user_id %}
+                                    <a href="/user/{{ sscat.der_msg.user_id }}">
+                                        <strong>{{ sscat.der_msg.username|e }}</strong><br>
+                                    </a>
+                                {% else %}
                                     <strong>{{ sscat.der_msg.username|e }}</strong><br>
-                                </a>
+                                {% endif %}
+                            </td>
                     </tr>
                     {% endfor %}
             {% endfor %}

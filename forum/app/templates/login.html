@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {{ super() }}
+			<div class="col-xs-3"></div><div class="panel panel-default col-xs-6">
+            	<table style="width: 100%;">
+                	<tr><td style="text-align: center;">
+                    	<h3><strong>Log in</strong></h3><br>
+                	</td></tr>
+            	</table>
+            	<form role="form" method="post" class="form-horizontal">
+						<div class="form-group">
+  							<label class="control-label col-xs-2" for="pseudo">Username:</label>
+  							<div class="col-xs-6">
+    							<input type="text" class="form-control" name="pseudo" placeholder="Enter username" value="{{ form.pseudo }}">
+  							</div>
+  							<div class="col-xs-4">
+    							{% if errors.pseudo %}
+                        		<p class="text-danger">
+                            		<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            		<span class="sr-only">Error:</span>
+                            		{{ errors.pseudo }}
+                        		</p>
+                        		{% endif %}
+  							</div>
+						</div>
+						<div class="form-group">
+  							<label class="control-label col-xs-2" for="password">Password:</label>
+  							<div class="col-xs-6">
+    							<input type="password" class="form-control" name="password" placeholder="Enter password">
+  							</div>
+  							<div class="col-xs-4">
+    							{% if errors.password %}
+                        		<p class="text-danger">
+                            		<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            		<span class="sr-only">Error:</span>
+                            		{{ errors.password }}
+                        		</p>
+                        		{% endif %}
+  							</div>
+						</div>
+            			<table style="width: 100%;">
+                			<tr><td style="text-align: center;">
+    							{% if errors.combine %}
+                        		<p class="text-danger">
+                            		<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            		<span class="sr-only">Error:</span>
+                            		{{ errors.combine }}
+                        		</p>
+                        		{% endif %}
+                			</td></tr>
+                			<tr><td style="text-align: center;">
+                    			<div class="checkbox">
+      								<label><input type="checkbox" name="remember" value="permanent"> Remember me</label>
+    							</div>
+                			</td></tr>
+                			<tr><td>&nbsp;</td></tr>
+                			<tr><td style="text-align: center;">
+                    			<button type="submit" class="btn btn-primary">
+    								<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Log in
+    							</button>
+                			</td></tr>
+            			</table>
+				</form>
+
+            	<table style="width: 100%;">
+            		<tr><td>&nbsp;</td></tr>
+                	<tr><td style="text-align: center;">
+                    	<small><a href="/register">Not registered yet ?</a></small>
+                	</td></tr>
+            	</table>
+        	</div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

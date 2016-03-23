@@ -5,9 +5,9 @@ Modo :
 10
 
 User :
-6
+7
 
-None :
+None/Banned :
 0
 
 
@@ -15,15 +15,15 @@ None :
 0-read not hidden
 1-navbar for connected
 2-read hidden
-3-write com
-4-create topic
-5-edit one's topic and one's com
-6-view one's edit history
-7-hide one's topic
-8-edit other's topic and other's com
+3-edit one's profile
+4-write com
+5-create topic
+6-edit/hide one's com and topic
+7-view one's edit history
+8-edit/hide other's com and topic (including title)
 9-view other's edit history
-10-hide other's topic
-11-ban/deban user
+10-ban/deban user
+11-edit other's profile
 12-add/edit/delete/hide subcategory
 13-add/edit/delete/hide category
 14-ban/deban modo

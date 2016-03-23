@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {{ super() }}
+            <table style="width: 100%;">
+                <tr><td style="text-align: center;">
+                    <h3><strong>{{ user.username|e }}</strong></h3><br>
+                </td></tr>
+            </table>
+            <ul class="nav nav-tabs">
+                <li><a href="#profile" data-toggle="tab">Profile</a></li>
+                <li><a href="#topic" data-toggle="tab">Discussions started</a></li>
+                <li><a href="#com" data-toggle="tab">Comments</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane" id="profile">
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <th style="text-align: center; width: 25%;">{{ user.username|e }}'s profile</th>
+                            <th style="text-align: center;">General information</th>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: bottom;">
+                                <span class="glyphicon glyphicon-king" aria-hidden="true"></span>
+                                Rank : {# persission #}<br>
+                                <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+                                 Contact : {# bouton MP #}</td>
+                            <td>
+                                First Name : {{ user.prenom|default('Not specified',true)|capitalize }}<br>
+                                Last Name : {{ user.nom|default('Not specified',true)|capitalize }}<br>
+                                Sexe : {{ user.sexe|default('Not specified',true) }}<br>
+                                Birthdate : {{ user.date_naiss|default('Not specified',true) }}<br>
+                                Registered since : {{ user.date_creation }}<br>
+                                Last visit on : {{ user.date_connection }}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="tab-pane" id="topic">
+                    <table style="width: 100%;">
+                        <tr><td style="text-align: center;">
+                            <strong>{{ topics|length }} discussion(s) started by {{ user.username|e }}</strong><br>
+                        </td></tr>
+                            <table class="table table-bordered table-striped">
+                            <tr>
+                                <th style="text-align: center;">Title</th>
+                                <th style="text-align: center; width: 35%;">Subcategory</th>
+                                <th style="text-align: center; width: 6%;">Messages</th>
+                            </tr>
+                            {% for topic in topics %}
+                            <tr>
+                                <td>
+                                    <a href="/topic/{{ topic.id }}">{{ topic.titre|e }}</a>
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="/subcategory/{{ topic.sscat_id }}"><strong>{{ topic.sscat_titre|e }}</strong></a>
+                                </td>
+                                <td style="text-align: center;">
+                                    {{ topic.nb_com }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </table>
+                </div>
+                <div class="tab-pane" id="com">
+                    <table style="width: 100%;">
+                        <tr><td style="text-align: center;">
+                            <strong>{{ coms|length }} comment(s) posted by {{ user.username|e }}</strong><br>
+                        </td></tr>
+                        <table class="table table-bordered table-striped">
+                            {% for com in coms %}
+                            <tr class="info">
+                                <th style="text-align: center;">Discussion : 
+                                    <a href="/topic/{{ com.topic_id }}">{{ com.topic_titre|e }}</a>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>
+                                <small>
+                                    <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                                    &nbsp;Subcategory : <a href="/subcategory/{{ com.sscat_id }}">{{ com.sscat_titre|e }}</a>&nbsp;&nbsp;&nbsp;
+                                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                                    Title : {{ com.titre|e }}</a>&nbsp;&nbsp;&nbsp;
+                                    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                                    <span class="sr-only">Published on :</span>
+                                    {{ com.date_creation }}
+                                </small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ com.text|safe }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

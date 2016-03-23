@@ -5,9 +5,10 @@ CREATE TABLE User (
   id INTEGER PRIMARY KEY ASC,
   username VARCHAR(50) UNIQUE NOT NULL,
   email VARCHAR(300) UNIQUE NOT NULL,
-  password VARCHAR(30) NOT NULL,
+  password VARCHAR(60) NOT NULL,
   nom VARCHAR(60),
   prenom VARCHAR(60),
+  sexe VARCHAR(15),
   date_naiss DATE,
   date_creation REAL DEFAULT (datetime('now', 'localtime')),
   date_connection DATE
@@ -21,6 +22,7 @@ CREATE TABLE Topic(
   date_creation REAL DEFAULT (datetime('now', 'localtime')),
   date_modification REAL DEFAULT (datetime('now', 'localtime')),
   date_publication REAL DEFAULT (datetime('now', 'localtime')),
+  hidden BOOLEAN DEFAULT 0,
   user_id INTEGER,
   sous_cat_id INTEGER NOT NULL,
   FOREIGN KEY(user_id) REFERENCES User(id) ON DELETE SET NULL ON UPDATE CASCADE,
@@ -46,7 +48,8 @@ CREATE TABLE Categorie(
   titre VARCHAR(100) UNIQUE NOT NULL,
   date_creation REAL DEFAULT (datetime('now', 'localtime')),
   date_modification REAL DEFAULT (datetime('now', 'localtime')),
-  date_publication REAL
+  date_publication REAL,
+  hidden BOOLEAN DEFAULT 0
 );
 
 DROP TABLE IF EXISTS Sous_cat;
@@ -56,6 +59,7 @@ CREATE TABLE Sous_cat(
   date_creation REAL DEFAULT (datetime('now', 'localtime')),
   date_modification REAL DEFAULT (datetime('now', 'localtime')),
   date_publication REAL,
+  hidden BOOLEAN DEFAULT 0,
   categorie_id INTEGER NOT NULL,
   FOREIGN KEY (categorie_id) REFERENCES Categorie(id) ON DELETE CASCADE ON UPDATE CASCADE,
   UNIQUE (categorie_id,titre)
@@ -88,7 +92,7 @@ END;
 CREATE TRIGGER after_update_topic AFTER UPDATE ON Topic FOR EACH ROW
 BEGIN
   UPDATE Topic SET date_modification =
-  CASE WHEN NEW.text != OLD.text THEN
+  CASE WHEN NEW.titre != OLD.titre OR NEW.text != OLD.text THEN
     (datetime('now', 'localtime'))
   ELSE
     date_modification
@@ -133,18 +137,18 @@ INSERT INTO Permission (id,description) VALUES (0,'read if not hidden');
 INSERT INTO Permission (description) VALUES
   ('see the connected navbar'),
   ('read what''s hidden'),
+  ('edit one''s profile'),
   ('write com'),
   ('create topic'),
-  ('edit one''s topic and one''s com'),
+  ('edit/hide one''s com and topic'),
   ('view one''s edit history'),
-  ('hide one''s topic'),
-  ('edit other''s topic and other''s com'),
+  ('edit/hide other''s com and topic (including title)'),
   ('view other''s edit history'),
-  ('hide other''s topic'),
   ('ban/deban user'),
+  ('edit other''s profile'),
   ('add/edit/delete/hide subcategory'),
   ('add/edit/delete/hide category'),
   ('ban/deban modo'),
   ('change user/modo permission');
 
-INSERT INTO User (username,password,email) VALUES ('admin','admin666','iamyouradmin@haters.com');
+INSERT INTO User (username,password,email) VALUES ('admin','$2b$12$zcHw8a5AHKvmyeQgbspfG.JphhxzVaMfx.VdjOy9kG0.1I3Upo9Mi','iamyouradmin@haters.com');
