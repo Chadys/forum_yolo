@@ -11,6 +11,9 @@
     {% endblock %}
 </head>
 <body>
+{% macro option(opt, value, label) -%}
+  <option value={{ value }} {% if opt == value %} selected="selected"{% endif %}>{{ label }}</option>
+{%- endmacro %}
 {% block content %}
   <table style="width: 100%;">
   	 <tr><td style="text-align: center; vertical-align: middle;">

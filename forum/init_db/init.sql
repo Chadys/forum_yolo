@@ -5,13 +5,15 @@ CREATE TABLE User (
   id INTEGER PRIMARY KEY ASC,
   username VARCHAR(50) UNIQUE NOT NULL,
   email VARCHAR(300) UNIQUE NOT NULL,
-  password VARCHAR(60) NOT NULL,
+  password VARCHAR(50) NOT NULL,
   nom VARCHAR(60),
   prenom VARCHAR(60),
   sexe VARCHAR(15),
   date_naiss DATE,
   date_creation REAL DEFAULT (datetime('now', 'localtime')),
-  date_connection DATE
+  date_connection DATE DEFAULT (datetime('now', 'localtime')),
+  permission TINYINT NOT NULL DEFAULT 7,
+  FOREIGN KEY (permission) REFERENCES Permission(id) ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS Topic;
@@ -133,7 +135,7 @@ CREATE TABLE Permission(
   description VARCHAR(50) NOT NULL
 );
 
-INSERT INTO Permission (id,description) VALUES (0,'read if not hidden');
+INSERT INTO Permission (id,description) VALUES (0,'banned');
 INSERT INTO Permission (description) VALUES
   ('see the connected navbar'),
   ('read what''s hidden'),
@@ -151,4 +153,4 @@ INSERT INTO Permission (description) VALUES
   ('ban/deban modo'),
   ('change user/modo permission');
 
-INSERT INTO User (username,password,email) VALUES ('admin','$2b$12$zcHw8a5AHKvmyeQgbspfG.JphhxzVaMfx.VdjOy9kG0.1I3Upo9Mi','iamyouradmin@haters.com');
+INSERT INTO User (username,password,email,permission) VALUES ('admin','$2b$12$zcHw8a5AHKvmyeQgbspfG.JphhxzVaMfx.VdjOy9kG0.1I3Upo9Mi','iamyouradmin@haters.com',15);

@@ -16,7 +16,7 @@ def get_db():
 
 
 def nullify(champ):
-    if (not champ) or champ == '---':
+    if (not champ):
         return None
     return champ
 
@@ -29,9 +29,8 @@ class User(object):
     def insert(cls, username, password, email, first_name, last_name, bday, sexe):
         db = get_db()
         try:
-            for champ in [first_name,last_name,bday,sexe]:
-                champ=nullify(champ)
-            db.execute("""INSERT INTO User (username, password, email, prenom, nom, date_naiss, sexe) VALUES (?, ?, ?, ?, ?, strftime('%m/%d/%Y',?), ?)""", [username, password, email, first_name, last_name, bday, sexe])
+            first_name, last_name, bday, sexe = nullify(first_name), nullify(last_name), nullify(bday), nullify(sexe)
+            db.execute("""INSERT INTO User (username, password, email, prenom, nom, date_naiss, sexe) VALUES (?, ?, ?, ?, ?, ?, ?)""", [username, password, email, first_name, last_name, bday, sexe])
             db.commit()
         except sqlite3.IntegrityError as e:
             print "Insert error for {user} : {message}".format(user=username, message=e.message)
@@ -39,7 +38,7 @@ class User(object):
     @classmethod
     def get_user(cls, id):
         db = get_db()
-        cur = db.execute("""SELECT id, username, email, date_creation, date_connection, nom, prenom, date_naiss, sexe, password FROM User WHERE id=?""", [id])
+        cur = db.execute("""SELECT id, username, email, date_creation, date_connection, nom, prenom, date_naiss, sexe, password, permission FROM User WHERE id=?""", [id])
         result = cur.fetchone()
         if result:
             result = {
@@ -52,8 +51,11 @@ class User(object):
                 'prenom': result[6],
                 'date_naiss': result[7],
                 'sexe': result[8],
-                'password': result[9]
+                'password': result[9],
+                'permission':result[10]
             }
+            if (result['permission'] == 0):
+                result['username'] = result['username']+' (BANNED)'
         return result
 
     @classmethod
@@ -77,9 +79,9 @@ class User(object):
     @classmethod
     def get_all_users(cls):
         db = get_db()
-        cur = db.execute("""SELECT id, username, date_creation, date_connection FROM User ORDER BY id""")
+        cur = db.execute("""SELECT id, username, date_creation, date_connection, permission FROM User ORDER BY id""")
         result = cur.fetchall()
-        return [{'id':user[0], 'username':user[1], 'date_creation':user[2], 'date_connection':user[3]} for user in result]
+        return [{'id':user[0], 'username':user[1], 'date_creation':user[2], 'date_connection':user[3], 'permission':user[4]} for user in result]
 
     @classmethod
     def update_connect(cls, id):
@@ -110,6 +112,39 @@ class User(object):
             result[i]=com
             i+=1
         return result
+
+    @classmethod
+    def update(cls, id, username, password, email, first_name, last_name, bday, sexe):
+        db = get_db()
+        try:
+            first_name, last_name, bday, sexe = nullify(first_name), nullify(last_name), nullify(bday), nullify(sexe)
+            db.execute("""UPDATE User SET username=?, password=?, email=?, prenom=?, nom=?, date_naiss=?, sexe=? WHERE id=?""", [username, password, email, first_name, last_name, bday, sexe, id])
+            db.commit()
+        except sqlite3.IntegrityError as e:
+            if not password:
+                db.execute("""UPDATE User SET username=?, email=?, prenom=?, nom=?, date_naiss=?, sexe=? WHERE id=?""", [username, email, first_name, last_name, bday, sexe, id])
+                db.commit()
+            else:
+                print "Update error for {user} : {message}".format(user=username, message=e.message)
+            
+    @classmethod
+    def update_permission(cls, id, perm):
+        db = get_db()
+        try:
+            db.execute("""UPDATE User SET permission=? WHERE id=?""", [perm, id])
+            db.commit()
+        except sqlite3.IntegrityError as e:
+            print "Update error for {user} : {message}".format(user=username, message=e.message)
+
+    @classmethod
+    def delete(cls, id):
+        db = get_db()
+        try:
+            db.execute("""DELETE FROM User WHERE id=?""", [id])
+            db.commit()
+        except sqlite3.IntegrityError as e:
+            print "Delete error for user {id} : {message}".format(id=id, message=e.message)
+
 
 
 
@@ -225,7 +260,7 @@ class Sous_cat(object):
     @classmethod
     def get_topics(cls, id):
         db = get_db()
-        cur = db.execute("""SELECT Topic.user_id, Topic.id, Topic.titre, COUNT(Commentaire.id) AS nb_com FROM Topic LEFT JOIN Commentaire ON Topic.id = Commentaire.topic_id WHERE Topic.sous_cat_id=? GROUP BY Topic.id ORDER BY Topic.date_publication""", [id])
+        cur = db.execute("""SELECT Topic.user_id, Topic.id, Topic.titre, COUNT(Commentaire.id) AS nb_com FROM Topic LEFT JOIN Commentaire ON Topic.id = Commentaire.topic_id WHERE Topic.sous_cat_id=? GROUP BY Topic.id ORDER BY Topic.date_publication DESC""", [id])
         result = cur.fetchall()
         i=0
         for topic in result:

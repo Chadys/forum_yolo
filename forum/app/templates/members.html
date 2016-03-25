@@ -14,6 +14,7 @@
             			<tr>
             				<th><p class="text-center">ID</p></th>
             				<th><p class="text-center">Username</p></th>
+                            <th><p class="text-center">Rank</p></th>
             				<th><p class="text-center">Registered since</p></th>
             				<th><p class="text-center">Last visit on</p></th>
             			</tr>
@@ -21,11 +22,28 @@
             			<tr>
             				<td><p class="text-center">{{ user.id }}</p></td>
             				<td><a href="/user/{{ user.id }}"><p class="text-center">{{ user.username }}</a></p></td>
+                            <td><p class="text-center">
+                                {% if user.permission is equalto 15 %}
+                                    <span class="glyphicon glyphicon-king" aria-hidden="true"></span>
+                                {% elif user.permission is equalto 10 %}
+                                    <span class="glyphicon glyphicon-knight" aria-hidden="true"></span>
+                                {% elif user.permission is equalto 7 %}
+                                    <span class="glyphicon glyphicon-pawn" aria-hidden="true"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+                                {% endif %}
+                            </p></td>
             				<td><p class="text-center">{{ user.date_creation }}</p></td>
             				<td><p class="text-center">{{ user.date_connection }}</p></td>
             			</tr>
             			{% endfor %}
             		</table>
+                </td></tr>
+                <tr><td>
+                    <div class="col-xs-3 text-center"><span class="glyphicon glyphicon-king" aria-hidden="true"></span> = Administrator,</div>
+                    <div class="col-xs-3 text-center"><span class="glyphicon glyphicon-knight" aria-hidden="true"></span> = Moderator,</div>
+                    <div class="col-xs-3 text-center"><span class="glyphicon glyphicon-pawn" aria-hidden="true"></span> = User,</div>
+                    <div class="col-xs-3 text-center"><span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span> = Banned</div>
                 </td></tr>
             </table>
         </div>

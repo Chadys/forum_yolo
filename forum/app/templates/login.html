@@ -48,7 +48,7 @@
                         		<p class="text-danger">
                             		<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                             		<span class="sr-only">Error:</span>
-                            		{{ errors.combine }}
+                            		{{ errors.combine|safe }}
                         		</p>
                         		{% endif %}
                 			</td></tr>

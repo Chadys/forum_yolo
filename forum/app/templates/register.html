@@ -6,19 +6,24 @@
         <div class="panel-body">
             {{ super() }}
             <div class="col-xs-2"></div><div class="panel panel-default col-xs-8">
-                <table style="width: 100%;">
-                    <tr><td>
+                <div class="col-xs-12">
+                    {% if not edit %}
                         <h3 class="text-center"><strong>Register form</strong></h3><br>
-                    </td></tr>
-                    <tr><td>
                         <p class="text-muted">* means the field is required</p><br>
-                    </td></tr>
-                </table>
+                    {% else %}
+                        <h3 class="text-center"><strong>Edit user</strong></h3><br>
+                        {% if edit is equalto 2 %}
+                            <div class="alert alert-success" role="alert">
+                                <p class="text-center"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Your changes have been saved</p>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
                 <form role="form" method="post" class="form-horizontal">
                         <div class="form-group">
                             <label class="control-label col-xs-2" for="pseudo">* Username:</label>
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" name="pseudo" placeholder="Enter username" value="{{ form.pseudo }}">
+                                    <input type="text" class="form-control" name="pseudo" placeholder="Enter username" value="{{ form.pseudo|e|replace(' (BANNED)','') }}" maxlength="50" {% if edit and session.permission < 15 %}readonly{% endif %}>
                             </div>
                             <div class="col-xs-4">
                                 {% if errors.pseudo %}
@@ -29,11 +34,16 @@
                                 </p>
                                 {% endif %}
                             </div>
+                            {% if edit and session.permission < 15 %}
+                                <div class="col-xs-10">
+                                    <small class="text-muted">If you want to change your username, please ask an administrator</small>
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="form-group">
                             <label class="control-label col-xs-2" for="email">* Email:</label>
                             <div class="col-xs-6">
-                                <input type="email" class="form-control" name="email" placeholder="email@example.com" value="{{ form.email }}">
+                                <input type="email" class="form-control" name="email" placeholder="email@example.com" value="{{ form.email }}" maxlength="300">
                             </div>
                             <div class="col-xs-4">
                                 {% if errors.email %}
@@ -46,9 +56,9 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label col-xs-2" for="password">* Password:</label>
+                            <label class="control-label col-xs-2" for="password">{% if not edit %}* Password:{% else %}Old pwd:{% endif %}</label>
                             <div class="col-xs-6">
-                                <input type="password" class="form-control" name="password" placeholder="Enter password">
+                                    <input type="password" class="form-control" name="password" placeholder="Enter{% if edit %} old{% endif %} password" maxlength="50">
                             </div>
                             <div class="col-xs-4">
                                 {% if errors.password %}
@@ -61,9 +71,9 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label col-xs-2" for="passwordbis">* Password:</label>
+                            <label class="control-label col-xs-2" for="passwordbis">{% if not edit %}* Password:{% else %}New pwd:{% endif %}</label>
                             <div class="col-xs-6">
-                                <input type="password" class="form-control" name="passwordbis" placeholder="Please repeat your password">
+                                    <input type="password" class="form-control" name="passwordbis" placeholder={% if not edit %}"Please repeat your password"{% else %}"Enter new password"{% endif %} maxlength="50">
                             </div>
                             <div class="col-xs-4">
                                 {% if errors.passwordbis %}
@@ -79,7 +89,7 @@
                         <div class="form-group">
                             <label class="control-label col-xs-2" for="fname">First name:</label>
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" name="fname" placeholder="Enter first name" value="{{ form.fname }}">
+                                <input type="text" class="form-control" name="fname" placeholder="Enter first name" value="{{ form.fname|default('',true) }}" maxlength="60">
                             </div>
                             <div class="col-xs-4">
                                 {% if errors.fname %}
@@ -94,7 +104,7 @@
                         <div class="form-group">
                             <label class="control-label col-xs-2" for="lname">Last name:</label>
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" name="lname" placeholder="Enter last name" value="{{ form.lname }}">
+                                <input type="text" class="form-control" name="lname" placeholder="Enter last name" value="{{ form.lname|default('',true) }}" maxlength="60">
                             </div>
                             <div class="col-xs-4">
                                 {% if errors.lname %}
@@ -109,7 +119,7 @@
                         <div class="form-group">
                             <label class="control-label col-xs-2" for="bday">Birth date:</label>
                             <div class="col-xs-6">
-                                <input type="date" class="form-control" name="bday" placeholder="MM/DD/YYYY" value="{{ form.bday }}">
+                                <input type="date" class="form-control" name="bday" placeholder="MM/DD/YYYY" value="{{ form.bday|default('',true) }}">
                             </div>
                             <div class="col-xs-4">
                                 {% if errors.bday %}
@@ -125,20 +135,21 @@
                             <label  class="control-label col-xs-2" for="sexe">Sexe:</label>
                             <div class="col-xs-6">
                                 <select class="form-control" name="sexe">
-                                    <option>---</option>
-                                    <option>Agender</option>
-                                    <option>Bigender</option>
-                                    <option>Female</option>
-                                    <option>Genderfluid</option>
-                                    <option>Male</option>
-                                    <option>Other</option>
-                                    <option>Trans female</option>
-                                    <option>Trans male</option>
+                                    <option data-hidden="true">---</option>
+                                    {{ option(form.sexe, "Agender", "Agender") }}
+                                    {{ option(form.sexe, "Bigender", "Bigender") }}
+                                    {{ option(form.sexe, "Female", "Female") }}
+                                    {{ option(form.sexe, "Genderfluid", "Genderfluid") }}
+                                    {{ option(form.sexe, "Male", "Male") }}
+                                    {{ option(form.sexe, "Other", "Other") }}
+                                    {{ option(form.sexe, "Trans female", "Trans female") }}
+                                    {{ option(form.sexe, "Trans male", "Trans male") }}
                                 </select>
                             </div>
                         </div>
 
                         <table style="width: 100%;">
+                        {% if not edit %}
                             <tr><td style="text-align: center;">
                                 <div class="checkbox">
                                     {% if errors.chart %}
@@ -156,15 +167,24 @@
                                     <span class="glyphicon glyphicon-book" aria-hidden="true"></span> Register
                                 </button>
                             </td></tr>
+                            <tr><td style="text-align: center;">
+                                <small><a href="/login">Already registered ?</a></small>
+                            </td></tr>
                         </table>
-                </form>
-
-                <table style="width: 100%;">
-                    <tr><td>&nbsp;</td></tr>
-                    <tr><td style="text-align: center;">
-                        <small><a href="/login">Already registered ?</a></small>
-                    </td></tr>
-                </table>
+                    </form>
+                        {% else %}
+                            <tr><td style="text-align: center;">
+                                <a href="/delete?type=user&id={{ id }}" class="btn btn-danger">
+                                    <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>&nbsp;Deregister
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save changes
+                                </button>
+                            </td></tr>
+                            <tr><td>&nbsp;</td></tr>
+                        </table>
+                    </form>
+                        {% endif %}
             </div></div>
         </div>
     </div>

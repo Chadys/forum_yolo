@@ -13,12 +13,8 @@
 			<form action="" method="post" role="form" class="form-horizontal">
             	<table style="width: 100%;">
                 	<tr><td style="text-align: right; width: 60%;">
-                		{% if type in ['category', 'subcategory'] %}
-                			<label class="control-label" for="title">Name:</label>
-                		{% else %}
-                			<label class="control-label" for="title">Title:</label>
-                        {% endif %}
-                        <input type="text" name="title" value="{{ form.title|e }}" maxlength="100" placeholder="Title">
+                		<label class="control-label" for="title">{% if type in ['category', 'subcategory'] %}Name:{% else %}Title:{% endif %}</label>
+                        <input type="text" name="title" value="{{ form.title|e }}" maxlength="100" placeholder={% if type in ['category', 'subcategory'] %}"Name"{% else %}"Title"{% endif %}>
                         </td><td style="text-align: left;">
                         {% if errors.title %}
                         <p class="text-danger">

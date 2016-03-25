@@ -11,12 +11,13 @@
                 </td></tr>
             </table>
             <ul class="nav nav-tabs">
-                <li><a href="#profile" data-toggle="tab">Profile</a></li>
+                <li class="active"><a href="#profile" data-toggle="tab">Profile</a></li>
                 <li><a href="#topic" data-toggle="tab">Discussions started</a></li>
                 <li><a href="#com" data-toggle="tab">Comments</a></li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane" id="profile">
+                {# DISPLAY PROFILE #}
+                <div class="tab-pane active" id="profile">
                     <table class="table table-bordered table-striped">
                         <tr>
                             <th style="text-align: center; width: 25%;">{{ user.username|e }}'s profile</th>
@@ -24,21 +25,97 @@
                         </tr>
                         <tr>
                             <td style="vertical-align: bottom;">
-                                <span class="glyphicon glyphicon-king" aria-hidden="true"></span>
-                                Rank : {# persission #}<br>
+                                {% if user.permission is equalto 15 %}
+                                    <span class="glyphicon glyphicon-king" aria-hidden="true"></span>
+                                    <strong>Rang :</strong> Administrator<br>
+                                {% elif user.permission is equalto 10 %}
+                                    <span class="glyphicon glyphicon-knight" aria-hidden="true"></span>
+                                    <strong>Rang :</strong> Moderator<br>
+                                {% elif user.permission is equalto 7 %}
+                                    <span class="glyphicon glyphicon-pawn" aria-hidden="true"></span>
+                                    <strong>Rang :</strong> User<br>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+                                    <strong>Rang :</strong> Banned<br>
+                                {% endif %}
                                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
-                                 Contact : {# bouton MP #}</td>
+                                 <strong>Contact :</strong> {# bouton MP #}</td>
                             <td>
-                                First Name : {{ user.prenom|default('Not specified',true)|capitalize }}<br>
-                                Last Name : {{ user.nom|default('Not specified',true)|capitalize }}<br>
-                                Sexe : {{ user.sexe|default('Not specified',true) }}<br>
-                                Birthdate : {{ user.date_naiss|default('Not specified',true) }}<br>
-                                Registered since : {{ user.date_creation }}<br>
-                                Last visit on : {{ user.date_connection }}
+                                <strong>First Name :</strong> {{ user.prenom|default('Not specified',true)|capitalize }}<br>
+                                <strong>Last Name :</strong> {{ user.nom|default('Not specified',true)|capitalize }}<br>
+                                <strong>Sexe :</strong> {{ user.sexe|default('Not specified',true) }}<br>
+                                <strong>Birthdate :</strong> {{ user.date_naiss|default('Not specified',true) }}<br>
+                                <strong>Registered since :</strong> {{ user.date_creation }}<br>
+                                <strong>Last visit on :</strong> {{ user.date_connection }}
                             </td>
                         </tr>
                     </table>
+                    {# EDIT USER #}
+                    {% if (((session.permission is equalto 15) and (user.permission < 15)) or (user.id is equalto session.id)) %}
+                        <div class="col-xs-4 text-center">
+                            <a href="/edit_user/{{ user.id }}" class="btn btn-warning">
+                                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit profile
+                            </a>
+                        </div>
+                    {% endif %}
+                    {# BAN USER #}
+                    {% if (session.permission >= 10) and (user.permission < session.permission) %}
+                        <div class="col-xs-4 text-center">
+                            <a href="/ban/{{user.id}}" class="btn btn-danger">
+                                <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span> 
+                                {% if user.permission >0 %}
+                                    Ban user
+                                {% else %}
+                                    Unban user
+                                {% endif %}
+                            </a>
+                        </div>
+                    {% endif %}
+                    {# CHANGE USER'S PERMISSION #}
+                    {% if (user.permission > 0) and (((session.permission is equalto 15) and ((user.permission < 15) or (user.id is equalto session.id)))) %}
+                        <div class="col-xs-4 text-center">
+                            <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#changePerm" aria-expanded="false" aria-controls="changePerm">
+                                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Change user's permission
+                            </button>
+
+                            <form role="form" method="post" class="form-horizontal">
+                                <div class="collapse" id="changePerm">
+                                    <br>
+                                    <div class="card card-block"><div class="panel panel-default">
+                                        <br>
+                                        <div class="btn-group btn-group-justified" data-toggle="buttons">
+                                            {# user #}
+                                            <label class="btn btn-default {% if user.permission is equalto 7 %} active{% endif %}">
+                                                <input type="radio" name="perm" id="user" value="7" autocomplete="off">
+                                                    <span class="glyphicon glyphicon-pawn" aria-hidden="true"></span> User
+                                            </label>
+                                            {# modo #}
+                                            <label class="btn btn-primary {% if user.permission is equalto 10 %} active{% endif %}">
+                                                <input type="radio" name="perm" id="modo" value="10" autocomplete="off">
+                                                    <span class="glyphicon glyphicon-knight" aria-hidden="true"></span> Moderator
+                                            </label>
+                                            {# admin #}
+                                            <label class="btn btn-success {% if user.permission is equalto 15 %} active{% endif %}">
+                                                <input type="radio" name="perm" id="admin" value="15" autocomplete="off">
+                                                    <span class="glyphicon glyphicon-king" aria-hidden="true"></span> Administrator
+                                            </label>
+                                        </div>
+                                        <br>
+                                        <div class="text-center">
+                                            <button type="submit" class="btn btn-info">
+                                                <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save changes
+                                            </button>
+                                        </div>
+                                        <br>
+                                    </div></div>
+                                </div>
+                            </form>
+                        </div>
+                    {% endif %}
                 </div>
+
+
+                {# DISPLAY TOPICS #}
                 <div class="tab-pane" id="topic">
                     <table style="width: 100%;">
                         <tr><td style="text-align: center;">
@@ -66,6 +143,9 @@
                         </table>
                     </table>
                 </div>
+
+
+                {# DISPLAY COMMENTS #}
                 <div class="tab-pane" id="com">
                     <table style="width: 100%;">
                         <tr><td style="text-align: center;">
