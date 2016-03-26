@@ -7,6 +7,7 @@
     {% endblock %}
     </title>
     <link rel="stylesheet" href="/static/css/bootstrap.css"></head>
+    <link rel="stylesheet" href="/static/css/blockquote.css">
     {% block extra_css %}
     {% endblock %}
 </head>
@@ -14,12 +15,28 @@
 {% macro option(opt, value, label) -%}
   <option value={{ value }} {% if opt == value %} selected="selected"{% endif %}>{{ label }}</option>
 {%- endmacro %}
+{% macro confirm_popup(text) -%}
+  <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <strong><strong>Are you sure ?</strong></strong>
+              </div>
+              <div class="modal-body">
+                  <strong>{{ text }}</strong>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-info" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
+                  <a class="btn btn-danger btn-ok"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Confirm</a>
+              </div>
+          </div>
+      </div>
+  </div>
+{%- endmacro %}
 {% block content %}
-  <table style="width: 100%;">
-  	 <tr><td style="text-align: center; vertical-align: middle;">
+  <div class="text-center">
            <h1>Yolo Forum</h1><br>
-       </td></tr>
-  </table>
+  </div>
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
@@ -59,5 +76,6 @@
 {% endblock %}
   <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
   <script src="/static/js/bootstrap.js"></script>
+  <script src="/static/js/confirm-delete.js"></script>
 </body>
 </html>

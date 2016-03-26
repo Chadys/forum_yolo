@@ -174,9 +174,12 @@
                     </form>
                         {% else %}
                             <tr><td style="text-align: center;">
-                                <a href="/delete?type=user&id={{ id }}" class="btn btn-danger">
-                                    <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>&nbsp;Deregister
-                                </a>
+                                <a href="#" data-href="/delete?type=user&id={{ id }}" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>&nbsp;Deregister</a>
+                                {% if session.id is equalto id %}
+                                    {{ confirm_popup("If you confirm, you will remove yourself completely from this forum forever.") }}
+                                {% else %}
+                                    {{ confirm_popup("With great power comes great responsability ; are you sure this user deserves complete annihilation ?") }}
+                                {% endif %}
                                 <button type="submit" class="btn btn-success">
                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save changes
                                 </button>

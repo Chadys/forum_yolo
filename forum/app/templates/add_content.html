@@ -9,7 +9,7 @@
                 <tr><td style="text-align: center;">
                     <h3>Add a {{type}} to {{ container|e }} :</h3><br>
                 </td></tr>
-            </table>
+            <tr><td>
 			<form action="" method="post" role="form" class="form-horizontal">
             	<table style="width: 100%;">
                 	<tr><td style="text-align: right; width: 60%;">
@@ -38,19 +38,31 @@
                                 </p>
                             {% endif %}
     					</td></tr>
-    				{% endif %}<tr><td>&nbsp;</td></tr>
-    				<tr><td style="text-align: right;">
-                        <a href="{{ back }}" class="btn btn-info">
-                            <span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span>&nbsp;Return
-                        </a>
-
-                        <button type="submit" class="btn btn-success">
-                            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Add
-                        </button>
-                        <!--<input class="btn btn-success" type="submit" value="Add">-->
-    				</td></tr>
+    				{% endif %}
                 </table>
+            </td></tr>
+    		<tr><td style="text-align: center;">
+                    {% if type is not equalto 'comment' %}
+                        {% if force_hidden %}
+                            <p class="text-muted"><input type="checkbox" name="hidden" value="hide" {% if hidden %} checked="checked" {% endif %} disabled >  Restrict access to this {{ type }} to registered visitors only (the whole category is already hidden)</p>
+                        {% else %}
+                            <input type="checkbox" name="hidden" value="hide" {% if hidden %} checked="checked" {% endif %} >  Restrict access to this {{ type }} to registered visitors only
+                        {% endif %}
+                    {% endif %}
+                </td></tr>
+                <tr><td>&nbsp;</td></tr>
+                <tr><td style="text-align: center;">
+                    <a href="{{ back }}" class="btn btn-info">
+                        <span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span>&nbsp;Cancel
+                    </a>
+
+                    <button type="submit" class="btn btn-success">
+                        <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Add
+                    </button>
+                </td></tr>
 			</form>
+            </td></tr>
+            </table>
 		</div>
    </div>
 </div>

@@ -38,9 +38,15 @@
                                     {% endif %}</td>
                         </tr>
                         <tr class="info"><td></td><td>
-                            {% if (session.permission > 7) or (session.id and (session.id is equalto user.id)) %}
-                                <abbr title="Edit {{ topic.titre|e }}"><a href="/edit_topic/{{ topic.id }}" class="btn btn-default btn-sm" aria-label="edit topic">
-                                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                            {% if session.id %}
+                                {% if (session.permission > 7) or (session.id is equalto topic.user_id) %}
+                                    <abbr title="Edit {{ topic.titre|e }}"><a href="/edit_topic/{{ topic.id }}" class="btn btn-default btn-sm" aria-label="edit topic">
+                                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                    </a></abbr>
+                                {% endif %}
+                                <abbr title="Quote this comment"><a href="/add_com/{{ topic.id }}?text={{ "<blockquote>"~topic.text~"<footer>by<cite title=\""~topic.username~"\"> "~topic.username~"</cite></footer></blockquote>"|e }}"
+                                class="btn btn-default btn-sm" aria-label="quote comment">
+                                    <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
                                 </a></abbr>
                             {% endif %}
                         </td></tr>
@@ -65,9 +71,15 @@
                                     {% endif %}</td>
                             </tr>
                             <tr><td></td><td>
-                                {% if (session.permission > 7) or (session.id and (session.id is equalto user.id)) %}
-                                    <abbr title="Edit this comment"><a href="/edit_com/{{ com.id }}" class="btn btn-default btn-xs" aria-label="edit comment">
-                                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                {% if session.id %}
+                                    {% if (session.permission > 7) or (session.id is equalto com.user_id) %}
+                                        <abbr title="Edit this comment"><a href="/edit_com/{{ com.id }}" class="btn btn-default btn-sm" aria-label="edit comment">
+                                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                        </a></abbr>
+                                    {% endif %}
+                                    <abbr title="Quote this comment"><a href="/add_com/{{ topic.id }}?text={{ "<blockquote><small>"~com.text~"</small><footer>by<cite title=\""~com.username~"\"> "~com.username~"</cite></footer></blockquote>"|e }}"
+                                    class="btn btn-default btn-sm" aria-label="quote comment">
+                                        <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
                                     </a></abbr>
                                 {% endif %}
                             </td></tr>

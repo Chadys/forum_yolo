@@ -20,7 +20,7 @@ DROP TABLE IF EXISTS Topic;
 CREATE TABLE Topic(
   id INTEGER PRIMARY KEY ASC,
   titre VARCHAR(100) NOT NULL,
-  text TEXT,
+  text TEXT NOT NULL,
   date_creation REAL DEFAULT (datetime('now', 'localtime')),
   date_modification REAL DEFAULT (datetime('now', 'localtime')),
   date_publication REAL DEFAULT (datetime('now', 'localtime')),
@@ -35,7 +35,7 @@ DROP TABLE IF EXISTS Commentaire;
 CREATE TABLE Commentaire(
   id INTEGER PRIMARY KEY ASC,
   titre VARCHAR(100),
-  text TEXT,
+  text TEXT NOT NULL,
   date_creation REAL DEFAULT (datetime('now', 'localtime')),
   date_modification REAL DEFAULT (datetime('now', 'localtime')),
   user_id INTEGER,
@@ -84,11 +84,28 @@ END;
 
 CREATE TRIGGER after_insert_topic AFTER INSERT ON Topic FOR EACH ROW
 BEGIN
+  UPDATE Topic SET hidden = 
+  CASE WHEN NEW.hidden != 1 AND 1 = (SELECT hidden FROM Sous_cat WHERE Sous_cat.id = NEW.sous_cat_id) THEN
+    1
+  ELSE
+    NEW.hidden
+  END WHERE id=NEW.id;
+
   UPDATE Sous_cat SET date_publication = (datetime('now', 'localtime')) WHERE Sous_cat.id = NEW.sous_cat_id;
 
   UPDATE Categorie SET date_publication = (datetime('now', 'localtime')) WHERE Categorie.id = (
     SELECT categorie_id FROM Sous_cat WHERE Sous_cat.id = NEW.sous_cat_id
   );
+END;
+
+CREATE TRIGGER after_insert_sscat AFTER INSERT ON Sous_cat FOR EACH ROW
+BEGIN
+  UPDATE Sous_cat SET hidden = 
+  CASE WHEN NEW.hidden != 1 AND 1 = (SELECT hidden FROM Categorie WHERE Categorie.id = NEW.categorie_id) THEN
+    1
+  ELSE
+    NEW.hidden
+  END WHERE id=NEW.id;
 END;
 
 CREATE TRIGGER after_update_topic AFTER UPDATE ON Topic FOR EACH ROW
@@ -98,8 +115,14 @@ BEGIN
     (datetime('now', 'localtime'))
   ELSE
     date_modification
-  END WHERE Topic.id = NEW.id;
+  END, hidden = 
+  CASE WHEN NEW.hidden != 1 AND 1 = (SELECT hidden FROM Sous_cat WHERE Sous_cat.id = NEW.sous_cat_id) THEN
+    1
+  ELSE
+    NEW.hidden
+  END WHERE id=NEW.id;
 END;
+
 CREATE TRIGGER after_update_commentaire AFTER UPDATE ON Commentaire FOR EACH ROW
 BEGIN
   UPDATE Commentaire SET date_modification = 
@@ -109,6 +132,7 @@ BEGIN
     date_modification
   END WHERE Commentaire.id = NEW.id;
 END;
+
 CREATE TRIGGER after_update_categorie AFTER UPDATE ON Categorie FOR EACH ROW
 BEGIN
   UPDATE Categorie SET date_modification = 
@@ -117,7 +141,22 @@ BEGIN
   ELSE
     date_modification
   END WHERE Categorie.id = NEW.id;
+
+  UPDATE Sous_cat SET hidden =
+  CASE WHEN NEW.hidden != OLD.hidden THEN
+    NEW.hidden
+  ELSE
+    hidden
+  END WHERE Sous_cat.categorie_id = NEW.id;
+
+  UPDATE Topic SET hidden =
+  CASE WHEN NEW.hidden != OLD.hidden THEN
+    NEW.hidden
+  ELSE
+    hidden
+  END WHERE EXISTS (SELECT id FROM Sous_cat WHERE Sous_cat.categorie_id = NEW.id AND Sous_cat.id = Topic.sous_cat_id);
 END;
+
 CREATE TRIGGER after_update_sscat AFTER UPDATE ON Sous_cat FOR EACH ROW
 BEGIN
   UPDATE Sous_cat SET date_modification = 
@@ -125,7 +164,19 @@ BEGIN
     (datetime('now', 'localtime'))
   ELSE
     date_modification
-  END WHERE Sous_cat.id = NEW.id;
+  END, hidden =
+  CASE WHEN NEW.hidden != 1 AND 1 = (SELECT hidden FROM Categorie WHERE Categorie.id = NEW.categorie_id) THEN
+    1
+  ELSE
+    NEW.hidden
+  WHERE Sous_cat.id = NEW.id;
+
+  UPDATE Topic SET hidden =
+  CASE WHEN NEW.hidden != OLD.hidden THEN
+    NEW.hidden
+  ELSE
+    hidden
+  END WHERE Topic.sous_cat_id = NEW.id;
 END;
 
 
@@ -135,22 +186,22 @@ CREATE TABLE Permission(
   description VARCHAR(50) NOT NULL
 );
 
-INSERT INTO Permission (id,description) VALUES (0,'banned');
+INSERT INTO Permission (id,description) VALUES (0,'read what''s not hidden (banned)');
 INSERT INTO Permission (description) VALUES
-  ('see the connected navbar'),
   ('read what''s hidden'),
   ('edit one''s profile'),
+  ('see users/send MP'),
   ('write com'),
   ('create topic'),
   ('edit/hide one''s com and topic'),
-  ('view one''s edit history'),
+  ('view one''s edit history (user)'),
   ('edit/hide other''s com and topic (including title)'),
   ('view other''s edit history'),
-  ('ban/deban user'),
+  ('ban/deban user (modo)'),
   ('edit other''s profile'),
   ('add/edit/delete/hide subcategory'),
   ('add/edit/delete/hide category'),
   ('ban/deban modo'),
-  ('change user/modo permission');
+  ('change user/modo permission (admin)');
 
 INSERT INTO User (username,password,email,permission) VALUES ('admin','$2b$12$zcHw8a5AHKvmyeQgbspfG.JphhxzVaMfx.VdjOy9kG0.1I3Upo9Mi','iamyouradmin@haters.com',15);

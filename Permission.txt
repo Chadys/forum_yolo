@@ -13,9 +13,9 @@ None/Banned :
 
 
 0-read not hidden
-1-navbar for connected
-2-read hidden
-3-edit one's profile
+1-read hidden
+2-edit one's profile
+3-see/communicate with users
 4-write com
 5-create topic
 6-edit/hide one's com and topic

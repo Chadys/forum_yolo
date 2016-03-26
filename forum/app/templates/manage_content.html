@@ -9,7 +9,7 @@
                 <tr><td style="text-align: center;">
                     <h3>Edit {{type}} "{{ this.titre|e }}" :</h3><br>
                 </td></tr>
-            </table>
+            <tr><td>    
             <form action="" role="form" method="post" class="form-horizontal">
                 <table style="width: 100%;">
                     <tr><td style="text-align: right; width: 60%;">
@@ -25,6 +25,7 @@
                         {% endif %}
                     </td></tr>
                     {% if type in ['topic', 'comment'] %}
+                        <tr><td>&nbsp;</td></tr>
                         <tr><td style="text-align: right;">
                             <label class="control-label" for="content">Content:</label>
                             <textarea  name="content" value="{{ form.content|e }}" placeholder="Text">{{ form.content|e }}</textarea>
@@ -40,21 +41,42 @@
                     {% endif %}
                 </table>
                 <br>
-    			<table style="width: 100%;"><tr><td style="text-align: center;">
+    		</td></tr>
+            <tr><td style="text-align: center;">
+                    {% if type is not equalto 'comment' %}
+                        {% if force_hidden %}
+                            <p class="text-muted"><input type="checkbox" name="hidden" value="hide" {% if this.hidden %} checked="checked" {% endif %} disabled >  Restrict access to this {{ type }} to registered visitors only (the whole category is already hidden)</p>
+                        {% else %}
+                            <input type="checkbox" name="hidden" value="hide" {% if this.hidden %} checked="checked" {% endif %} >  Restrict access to this {{ type }} to registered visitors only
+                        {% endif %}
+                    {% endif %}
+            </td></tr>
+            <tr><td>&nbsp;</td></tr>
+            <tr><td style="text-align: center;">
                         <a href="{{ back }}" class="btn btn-info">
-                            <span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span>&nbsp;Return
+                            <span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span>&nbsp;Cancel
                         </a>
 
-    					<a href="/delete?type={{ type }}&id={{ this.id }}" class="btn btn-danger">
-                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Delete
-                        </a>
+                        {% if (type not in ['topic', 'comment']) or (session.permission is equalto 15) or (this.user_id and (this.user_id is equalto session.id)) %}
 
+                            <a href="#" data-href="/delete?type={{ type }}&id={{ this.id }}" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Delete</a>
+                            {{ confirm_popup("If you confirm, this "~type~" will be irreversibly deleted.") }}
+
+                        {% endif %}
+                        {% if (type in ['topic', 'comment']) and session.permission > 7 %}
+                            <a href="#" data-href="/moderate?type={{ type }}&id={{ this.id }}&modo={{ session.username }}" class="btn btn-warning" data-toggle="modal" data-target="#confirm-delete">
+                                <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>&nbsp;Moderate
+                                {{ confirm_popup("If you confirm, this content will be sentenced to be lost forever") }}
+                            </a>
+                        {% endif %}
                         <button type="submit" class="btn btn-success">
                             <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;Edit
                         </button>
     				</td></tr>
                 </table>
 			</form>
+            </td></tr>
+            </table>
 		</div>
    </div>
 </div>

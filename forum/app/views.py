@@ -73,20 +73,20 @@ def registration_complete(check=None):
     abort(400)
 
 
-def deny_access(perm_mini=None, type=None):
+def deny_access(perm_mini=None, type=None, hidden=True):
     def decorator(func):
         @wraps(func)
         def wrapper(*args,**kwargs):
             session_id=session.get('id',None)
-            user_id=None
-            if type:
-                if type=='user':
-                    user_id=kwargs.get('id')
-                elif type=='topic':
-                    user_id=models.Topic.get_topic(kwargs.get('topic_id')).get('user_id')
-                else:
-                    user_id=models.Com.get_com(kwargs.get('com_id')).get('user_id')
-            if session_id:
+            if session_id and hidden:
+                user_id=None
+                if type:
+                    if type=='user':
+                        user_id=kwargs.get('id')
+                    elif type=='topic':
+                        user_id=models.Topic.get_topic(kwargs.get('topic_id')).get('user_id')
+                    else:
+                        user_id=models.Com.get_com(kwargs.get('com_id')).get('user_id')
                 if (not perm_mini and not user_id) or session_id == user_id or (perm_mini and session.get('permission') >= perm_mini):
                     return func(*args,**kwargs)
                 abort(403)
@@ -263,24 +263,35 @@ def addtopic(sscat_id):
 @deny_access()
 def addcom(topic_id):
     try:
+        text = request.args.get('text')
+        if text:
+            return add_content('comment',topic_id,text+'\n\n')
         return add_content('comment',topic_id)
     except TypeError as e:
         print "{message}".format(message=e.message)
         abort(404)
 
-def add_content(type, container_id=None):
+def add_content(type, container_id=None, text=None):
     champs={}
+    form={}
+    force_hidden=0
     if type == 'comment':
         champs['requis'] = ['content']
+        if text:
+            form={'content':text}
         container = models.Topic.get_topic(container_id)['titre']
         back = url_for('affichetopic', id=container_id)
     elif type == 'topic':
         champs['requis'] = ['title','content']
-        container = models.Sous_cat.get_sscat(container_id)['titre']
+        container = models.Sous_cat.get_sscat(container_id)
+        force_hidden=container['hidden']
+        container =  container['titre']
         back = url_for('affichesscat', id=container_id)
     elif type == 'subcategory':
         champs['requis'] = ['title']
-        container = models.Cat.get_cat(container_id)['titre']
+        container = models.Cat.get_cat(container_id)
+        force_hidden=container['hidden']
+        container =  container['titre']
         back = url_for('affichecat', id=container_id)
     else:
         champs['requis'] = ['title']
@@ -288,27 +299,27 @@ def add_content(type, container_id=None):
         back = '/'
 
     if request.method == 'GET':
-        return render_template('add_content.html', form={}, errors={}, type=type, container=container, back=back)
+        return render_template('add_content.html', form=form, errors={}, type=type, container=container, back=back, hidden=force_hidden,force_hidden=force_hidden)
     else:
-        # ipdb.set_trace()
         form = request.form
+        hidden = 1 if force_hidden or form.get('hidden',None) else 0
         result =  validate(form, champs)
         if result['valid']:
             if type == 'comment':
                 models.Com.insert(container_id,session['id'], result['form']['title'], nl2br(result['form']['content']))
             elif type == 'topic':
-                models.Topic.insert(container_id,session['id'], result['form']['title'], nl2br(result['form']['content']))
+                models.Topic.insert(container_id,session['id'], result['form']['title'], nl2br(result['form']['content']),hidden)
             elif type == 'subcategory':
                 if existing_sscat(container,result['form']['title'],result['errors']):
-                    return render_template('add_content.html',form=result['form'], errors=result['errors'], type=type, container=container, back=back)
-                models.Sous_cat.insert(result['form']['title'],container_id)
+                    return render_template('add_content.html',form=result['form'], errors=result['errors'], type=type, container=container, back=back, hidden=hidden,force_hidden=force_hidden)
+                models.Sous_cat.insert(result['form']['title'],container_id,hidden)
             else:
                 if existing_cat(result['form']['title'],result['errors']):
-                    return render_template('add_content.html',form=result['form'], errors=result['errors'], type=type, container=container, back=back)
-                models.Cat.insert(result['form']['title'])
+                    return render_template('add_content.html',form=result['form'], errors=result['errors'], type=type, container=container, back=back, hidden=hidden,force_hidden=force_hidden)
+                models.Cat.insert(result['form']['title'],hidden)
             return redirect(back)
         else:
-            return render_template('add_content.html',form=result['form'], errors=result['errors'], type=type, container=container, back=back)
+            return render_template('add_content.html',form=result['form'], errors=result['errors'], type=type, container=container, back=back, hidden=hidden,force_hidden=force_hidden)
 
 
 
@@ -356,43 +367,47 @@ def editcom(com_id):
 
 def edit_content(this,type):
     champs={}
+    force_hidden=0
     if(type in {'comment', 'topic'}):
         champs['requis'] = ['content']
         form = {'title':this['titre'],'content':nl2br(this['text'],True)}
         if(type == 'comment'):
             back = url_for('affichetopic', id=this['topic_id'])
         else:
+            force_hidden=models.Sous_cat.get_sscat(this['sscat_id'])['hidden']
             back = url_for('affichetopic', id=this['id'])
     else:
         champs['requis'] = ['title']
         form = {'title':this['titre']}
         if(type == 'subcategory'):
+            force_hidden=models.Cat.get_cat(this['cat_id'])['hidden']
             back = url_for('affichesscat', id=this['id'])
         else:
             back = url_for('affichecat', id=this['id'])
 
     if request.method == 'GET':
-        return render_template('manage_content.html', form=form, errors={}, type=type, this=this, back=back)
+        return render_template('manage_content.html', form=form, errors={}, type=type, this=this, back=back, force_hidden=force_hidden)
     else:
         form = request.form
+        hidden = 1 if force_hidden or form.get('hidden',None) else 0
         result =  validate(form, champs)
         if result['valid']:
             if type == 'comment':
                 models.Com.edit(this['id'],result['form']['title'],nl2br(result['form']['content']))
             elif type == 'topic':
-                models.Topic.edit(this['id'],nl2br(result['form']['content']))
+                models.Topic.edit(this['id'],result['form']['title'],nl2br(result['form']['content']),hidden)
             elif type == 'subcategory':
                 cat_titre=models.Cat.get_cat(this['cat_id'])['titre']
-                if existing_sscat(cat_titre,result['form']['title'],result['errors']):
-                    return render_template('manage_content.html',form=result['form'], errors=result['errors'], type=type, this=this, back=back)
-                models.Sous_cat.edit(this['id'],result['form']['title'])
+                if result['form']['title'] != this['titre'] and existing_sscat(cat_titre,result['form']['title'],result['errors']):
+                    return render_template('manage_content.html',form=result['form'], errors=result['errors'], type=type, this=this, back=back, force_hidden=force_hidden)
+                models.Sous_cat.edit(this['id'],result['form']['title'],hidden)
             else:
-                if existing_cat(result['form']['title'],result['errors']):
-                    return render_template('manage_content.html',form=result['form'], errors=result['errors'], type=type, this=this, back=back)
-                models.Cat.edit(this['id'],result['form']['title'])
+                if result['form']['title'] != this['titre'] and existing_cat(result['form']['title'],result['errors']):
+                    return render_template('manage_content.html',form=result['form'], errors=result['errors'], type=type, this=this, back=back, force_hidden=force_hidden)
+                models.Cat.edit(this['id'],result['form']['title'],hidden)
             return redirect(back)
         else:
-            return render_template('manage_content.html',form=result['form'], errors=result['errors'], type=type, this=this, back=back)
+            return render_template('manage_content.html',form=result['form'], errors=result['errors'], type=type, this=this, back=back, force_hidden=force_hidden)
 
 @app.route('/delete')
 @deny_access()
@@ -415,7 +430,23 @@ def delete():
         models.Cat.delete(id)
     else:
         models.User.delete(id)
-    return redirect('/logout')
+        if session['id'] == id:
+            return redirect('/logout')
+    return redirect('/')
+
+@app.route('/moderate')
+@deny_access()
+def moderate():
+    type = request.args['type']
+    id = request.args['id']
+    modo = request.args['modo']
+    if(type == 'comment'):
+        back=models.Com.get_com(id)['topic_id']
+        models.Com.moderate(id, modo)
+        return redirect(url_for('affichetopic', id=back))
+    else:
+        models.Topic.moderate(id, modo)
+        return redirect(url_for('affichetopic', id=id))
 
 @app.route('/edit_user/<int:id>', methods=['GET', 'POST'])
 @deny_access(15,'user')
