@@ -78,7 +78,7 @@ def deny_access(perm_mini=None, type=None, hidden=True):
         @wraps(func)
         def wrapper(*args,**kwargs):
             session_id=session.get('id',None)
-            if session_id and hidden:
+            if session_id or not hidden:
                 user_id=None
                 if type:
                     if type=='user':
@@ -164,10 +164,13 @@ def affichecat(id):
     if(not cat):
         print "Category {} not found".format(id)
         abort(404)
+    if cat['hidden'] and not session.get('permission'):
+        abort(401)
     cat['sscats'] = models.Cat.get_sscats(cat['id'])
     return render_template('cat.html',cat=cat)
 
 @app.route('/subcategory/<int:id>')
+
 def affichesscat(id):
     if request.method == 'GET':
         pass
@@ -177,11 +180,14 @@ def affichesscat(id):
     if(not sscat):
         print "Subcategory {} not found".format(id)
         abort(404)
+    if sscat['hidden'] and not session.get('permission'):
+        abort(401)
     sscat['topics'] = models.Sous_cat.get_topics(id)
     cat = models.Cat.get_cat(sscat['cat_id'])
     return render_template('sscat.html',sscat=sscat,cat=cat)
 
 @app.route('/topic/<int:id>')
+
 def affichetopic(id):
     if request.method == 'GET':
         pass
@@ -191,6 +197,8 @@ def affichetopic(id):
     if(not topic):
         print "Topic {} not found".format(id)
         abort(404)
+    if topic['hidden'] and not session.get('permission'):
+        abort(401)
     topic['com'] = models.Topic.get_coms(id)
     sscat=models.Sous_cat.get_sscat(topic['sscat_id'])
     cat=models.Cat.get_cat(sscat['cat_id'])
@@ -312,7 +320,7 @@ def add_content(type, container_id=None, text=None):
             elif type == 'subcategory':
                 if existing_sscat(container,result['form']['title'],result['errors']):
                     return render_template('add_content.html',form=result['form'], errors=result['errors'], type=type, container=container, back=back, hidden=hidden,force_hidden=force_hidden)
-                models.Sous_cat.insert(result['form']['title'],container_id,hidden)
+                models.Sous_cat.insert(result['form']['title'],result['form']['content'],container_id,hidden)
             else:
                 if existing_cat(result['form']['title'],result['errors']):
                     return render_template('add_content.html',form=result['form'], errors=result['errors'], type=type, container=container, back=back, hidden=hidden,force_hidden=force_hidden)
@@ -380,6 +388,7 @@ def edit_content(this,type):
         champs['requis'] = ['title']
         form = {'title':this['titre']}
         if(type == 'subcategory'):
+            form['content']=this.get('description') if this.get('description') else ''
             force_hidden=models.Cat.get_cat(this['cat_id'])['hidden']
             back = url_for('affichesscat', id=this['id'])
         else:
@@ -400,7 +409,7 @@ def edit_content(this,type):
                 cat_titre=models.Cat.get_cat(this['cat_id'])['titre']
                 if result['form']['title'] != this['titre'] and existing_sscat(cat_titre,result['form']['title'],result['errors']):
                     return render_template('manage_content.html',form=result['form'], errors=result['errors'], type=type, this=this, back=back, force_hidden=force_hidden)
-                models.Sous_cat.edit(this['id'],result['form']['title'],hidden)
+                models.Sous_cat.edit(this['id'],result['form']['title'],result['form']['content'],hidden)
             else:
                 if result['form']['title'] != this['titre'] and existing_cat(result['form']['title'],result['errors']):
                     return render_template('manage_content.html',form=result['form'], errors=result['errors'], type=type, this=this, back=back, force_hidden=force_hidden)

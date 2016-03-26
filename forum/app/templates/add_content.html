@@ -24,11 +24,11 @@
                         </p>
                         {% endif %}
     				</td></tr>
-                	{% if type in ['topic', 'comment'] %}
+                	{% if type is not equalto 'category' %}
                         <tr><td>&nbsp;</td></tr>
     					<tr><td style="text-align: right;">
-    						<label class="control-label" for="content">Content:</label>
-    						<textarea  name="content" value="{{ form.content|e }}" placeholder="Text">{{ form.content|e }}</textarea>
+    						<label class="control-label" for="content">{% if type is equalto 'subcategory' %}Description{% else %}Content:{% endif %}</label>
+    						<textarea  name="content" value="{{ form.content|e }}" placeholder="{% if type is equalto 'subcategory' %}Description:{% else %}Text{% endif %}">{{ form.content|e }}</textarea>
                         </td><td style="text-align: left;">
                             {% if errors.content %}
                                 <p class="text-danger">

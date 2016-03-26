@@ -193,9 +193,9 @@ class Cat(object):
     @classmethod
     def get_sscats(cls, id):
         db = get_db()
-        cur = db.execute("""SELECT id, titre, date_publication, hidden FROM Sous_cat WHERE categorie_id=? ORDER BY date_creation""", [id])
+        cur = db.execute("""SELECT id, titre, description, date_publication, hidden FROM Sous_cat WHERE categorie_id=? ORDER BY date_creation""", [id])
         result = cur.fetchall()
-        return [{'id':sscat[0], 'titre':sscat[1], 'date_publication':sscat[2], 'hidden': sscat[3]} for sscat in result]
+        return [{'id':sscat[0], 'titre':sscat[1], 'description':sscat[2], 'date_publication':sscat[3], 'hidden': sscat[4]} for sscat in result]
 
     @classmethod
     def edit(cls, id, titre, hidden):
@@ -222,10 +222,10 @@ class Sous_cat(object):
     Class permettant de manipuler la table Sous_cat
     """
     @classmethod
-    def insert(cls, titre, cat_id, hidden):
+    def insert(cls, titre, descr, cat_id, hidden):
         db = get_db()
         try:
-            db.execute("""INSERT INTO Sous_cat (titre, categorie_id, hidden) VALUES (?, ?, ?)""", [titre, cat_id, hidden])
+            db.execute("""INSERT INTO Sous_cat (titre, description, categorie_id, hidden) VALUES (?, ?, ?, ?)""", [titre, descr, cat_id, hidden])
             db.commit()
         except sqlite3.IntegrityError as e:
             print "Insert error for {sscat} : {message}".format(sscat=titre, message=e.message)
@@ -245,15 +245,16 @@ class Sous_cat(object):
     @classmethod
     def get_sscat(cls, id):
         db = get_db()
-        cur = db.execute("""SELECT id, titre, date_publication, categorie_id, hidden FROM Sous_cat WHERE id=?""", [id])
+        cur = db.execute("""SELECT id, titre, description, date_publication, categorie_id, hidden FROM Sous_cat WHERE id=?""", [id])
         result = cur.fetchone()
         if result:
             result = {
                 'id': result[0],
                 'titre': result[1],
-                'date_publication': result[2],
-                'cat_id': result[3],
-                'hidden': result[4]
+                'description': result[2],
+                'date_publication': result[3],
+                'cat_id': result[4],
+                'hidden': result[5]
             }
         return result
 
@@ -289,10 +290,10 @@ class Sous_cat(object):
         return None
 
     @classmethod
-    def edit(cls, id, titre, hidden):
+    def edit(cls, id, titre, descr, hidden):
         db = get_db()
         try:
-            cur = db.execute("""UPDATE Sous_cat SET titre=?, hidden=? WHERE Sous_cat.id=?""", [titre,hidden,id])
+            cur = db.execute("""UPDATE Sous_cat SET titre=?, description=?, hidden=? WHERE Sous_cat.id=?""", [titre,descr,hidden,id])
             db.commit()
         except sqlite3.IntegrityError as e:
             print "Update error for {sscat} : {message}".format(sscat=titre, message=e.message)

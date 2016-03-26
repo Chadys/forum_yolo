@@ -10,14 +10,26 @@
                 <li class="active">{{ cat.titre|e }}</li>
             </ol>
             <table class="table table-bordered table-striped">
+                <tr>
+                    <th style="text-align: center; vertical-align: middle; width: 3%;"></th>
+                    <th style="text-align: center; vertical-align: middle; width: 30%;">Name</FONT></th>
+                    <th style="text-align: center; vertical-align: middle;%;">Description</td>
+                </tr>
                 {% for sscat in cat.sscats %}
                 <tr>
                     <td style="text-align: center; vertical-align: middle; width: 3%;">
                         <p class="text-muted"><span class="glyphicon glyphicon-certificate" aria-hidden="true"></span></p>
                     </td>
-                    <td><a href="/subcategory/{{ sscat.id }}">
-                        <FONT SIZE="+1">{{ sscat.titre|e }}</FONT>
+                    <td style="text-align: center; vertical-align: middle; width: 30%;"><a href="/subcategory/{{ sscat.id }}">
+                        <FONT SIZE="+1">{{ hide(sscat.titre,'subcategory',sscat.hidden) }}</FONT>
                     </a></td>
+                    <td style="text-align: justify; vertical-align: middle;%;">
+                        {% if sscat.hidden and sscat.description and not session.id %}
+                            <p class="text-muted">This description is hidden</p>
+                        {% else %}
+                            {{ sscat.description|default("",true) }}
+                        {% endif %}
+                    </td>
                 </tr>
                 {% else %}
                     <tr><td style="width: 3%;"></td><td style="text-align: center; vertical-align: middle;"><strong>No subcategory yet.{% if session.permission is equalto 15 %} Please <a href="/add_subcategory/{{ cat.id }}">add some</strong></a>{% endif %}</td></tr>

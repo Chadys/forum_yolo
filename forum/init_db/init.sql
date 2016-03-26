@@ -58,6 +58,7 @@ DROP TABLE IF EXISTS Sous_cat;
 CREATE TABLE Sous_cat(
   id INTEGER PRIMARY KEY ASC,
   titre VARCHAR(100) NOT NULL,
+  description TEXT,
   date_creation REAL DEFAULT (datetime('now', 'localtime')),
   date_modification REAL DEFAULT (datetime('now', 'localtime')),
   date_publication REAL,
@@ -169,7 +170,7 @@ BEGIN
     1
   ELSE
     NEW.hidden
-  WHERE Sous_cat.id = NEW.id;
+  END WHERE Sous_cat.id = NEW.id;
 
   UPDATE Topic SET hidden =
   CASE WHEN NEW.hidden != OLD.hidden THEN

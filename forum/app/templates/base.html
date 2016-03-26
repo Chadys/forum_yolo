@@ -2,19 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <title>{% block titre %}
         {{ titre|default("Forum Yolo") }}
     {% endblock %}
     </title>
+
     <link rel="stylesheet" href="/static/css/bootstrap.css"></head>
     <link rel="stylesheet" href="/static/css/blockquote.css">
     {% block extra_css %}
     {% endblock %}
 </head>
 <body>
+
 {% macro option(opt, value, label) -%}
   <option value={{ value }} {% if opt == value %} selected="selected"{% endif %}>{{ label }}</option>
 {%- endmacro %}
+
 {% macro confirm_popup(text) -%}
   <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -33,6 +37,15 @@
       </div>
   </div>
 {%- endmacro %}
+
+{% macro hide(titre, type, hidden) -%}
+  {% if hidden and not session.permission %}
+    <p class="text-muted">{{ titre~' (hidden '~type~')'|e }}</p>
+  {% else %}
+    <p>{{ titre|e }}</p>
+  {% endif %}
+{%- endmacro %}
+
 {% block content %}
   <div class="text-center">
            <h1>Yolo Forum</h1><br>
@@ -74,8 +87,10 @@
     </div><!-- /.container-fluid -->
   </nav>
 {% endblock %}
+
   <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
   <script src="/static/js/bootstrap.js"></script>
   <script src="/static/js/confirm-delete.js"></script>
+
 </body>
 </html>

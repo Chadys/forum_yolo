@@ -21,7 +21,7 @@
                             {% endif %}
                         </th>
                         <th style="text-align: center;"><a href="/category/{{ cat.id }}">
-                            <FONT SIZE="+1">{{ cat.titre|e }}</FONT>
+                            <FONT SIZE="+1">{{ hide(cat.titre,'category',cat.hidden) }}</FONT>
                         </a></th>
                         <th style="text-align: center; width: 20%;">Last message</th>
                     </tr>
@@ -30,21 +30,29 @@
                             <td style="text-align: center; vertical-align: middle;">
                                 <p class="text-muted"><span class="glyphicon glyphicon-certificate" aria-hidden="true"></span></p>
                             </td>
-                            <td style="vertical-align: middle;"><a href="/subcategory/{{ sscat.id }}">
-                                {{ sscat.titre|e }}
-                            </a></td>
+                            <td style="vertical-align: middle;">
+                                <table style="width: 100%;"><tr><td style="width: 33%; border-right: 1px solid lightgray">
+                                    <a href="/subcategory/{{ sscat.id }}">{{ hide(sscat.titre,'subcategory',sscat.hidden)  }}</a></td>
+                                <td style="width: 66%; padding-left: 10px">
+                                    {% if sscat.hidden and sscat.description and not session.id %}
+                                        <p class="text-muted">This description is hidden</p>
+                                    {% else %}
+                                        {{ sscat.description|default("",true) }}
+                                    {% endif %}
+                                </td></tr></table>
+                            </td>
                             <td style="text-align: center; vertical-align: middle;">
                                 <a href="/topic/{{ sscat.der_msg.topic_id }}">
-                                    {{ sscat.der_msg.titre|e }}<br>
+                                    {{ hide(sscat.der_msg.titre,'topic',sscat.der_msg.hidden) }}
                                 </a>
-                                {{ sscat.der_msg.date }}<br>
-                                {% if sscat.der_msg.user_id %}
+                                {{ sscat.der_msg.date }}
+                                <p>{% if sscat.der_msg.user_id %}
                                     <a href="/user/{{ sscat.der_msg.user_id }}">
                                         <strong>{{ sscat.der_msg.username|e }}</strong><br>
                                     </a>
                                 {% else %}
                                     <strong>{{ sscat.der_msg.username|e }}</strong><br>
-                                {% endif %}
+                                {% endif %}</p>
                             </td>
                     </tr>
                     {% else %}

@@ -22,7 +22,7 @@
                             <p class="text-muted"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span></p>
                         </td>
                         <td><a href="/topic/{{ topic.id }}">
-                            {{ topic.titre|e }}
+                            {{ hide(topic.titre,'topic',topic.hidden) }}
                         </a></td>
                         <td style="text-align: center;">
                             {% if topic.user_id %}
