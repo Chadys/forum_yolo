@@ -47,6 +47,11 @@ def logout():
     session.pop('permission', None)
     return redirect('/')
 
+def sqldate(date):
+    if date:
+        return datetime.datetime.strptime(date, '%m/%d/%Y').strftime('%Y-%m-%d')
+    return None
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     champs={'requis':['pseudo', 'password', 'passwordbis', 'email'], 'pseudo':['pseudo'], 'email':['email'], 'pwd':['password', 'passwordbis'], 'date':'bday', 'check':['chart'], 'name':['fname','lname']}
@@ -58,7 +63,7 @@ def register():
         result =  validate(form, champs)
         if result['valid']:
             #ipdb.set_trace()
-            models.User.insert(result['form']['pseudo'],hashpw(result['form']['password'].encode('UTF_8'), gensalt()),result['form']['email'],result['form']['fname'],result['form']['lname'],result['form']['bday'],result['form'].get('sexe',None))
+            models.User.insert(result['form']['pseudo'],hashpw(result['form']['password'].encode('UTF_8'), gensalt()),result['form']['email'],result['form']['fname'],result['form']['lname'],sqldate(result['form']['bday']),result['form'].get('sexe',None))
             session['check'] = random.getrandbits(16)
             return redirect(url_for('registration_complete', check = session['check']))
         return render_template('register.html',form=result['form'], errors=result['errors'])
@@ -498,7 +503,7 @@ def edituser(id):
         else:
             password=None
         if result['valid']:
-            models.User.update(id, result['form']['pseudo'],password,result['form']['email'],result['form']['fname'],result['form']['lname'],datetime.datetime.strptime(result['form']['bday'], '%m/%d/%Y').strftime('%Y-%m-%d'),result['form'].get('sexe',None))
+            models.User.update(id, result['form']['pseudo'],password,result['form']['email'],result['form']['fname'],result['form']['lname'],sqldate(result['form']['bday']),result['form'].get('sexe',None))
             edit=2
         return render_template('register.html',form=result['form'], errors=result['errors'], edit=edit, id=user['id'])
 

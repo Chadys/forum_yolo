@@ -13,7 +13,7 @@
     {% block extra_css %}
     {% endblock %}
 </head>
-<body>
+<body background="/static/bg.jpg">
 
 {% macro option(opt, value, label) -%}
   <option value={{ value }} {% if opt == value %} selected="selected"{% endif %}>{{ label }}</option>
@@ -46,6 +46,7 @@
   {% endif %}
 {%- endmacro %}
 
+<br>
 {% block content %}
   <div class="text-center">
            <h1>Yolo Forum</h1><br>

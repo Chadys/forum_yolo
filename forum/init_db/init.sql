@@ -11,7 +11,7 @@ CREATE TABLE User (
   sexe VARCHAR(15),
   date_naiss DATE,
   date_creation REAL DEFAULT (datetime('now', 'localtime')),
-  date_connection DATE DEFAULT (datetime('now', 'localtime')),
+  date_connection REAL DEFAULT (datetime('now', 'localtime')),
   permission TINYINT NOT NULL DEFAULT 7,
   FOREIGN KEY (permission) REFERENCES Permission(id) ON UPDATE CASCADE
 );
