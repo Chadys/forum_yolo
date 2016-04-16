@@ -3,7 +3,8 @@ from flask import Flask, url_for, render_template, request, redirect, abort, Mar
 from bcrypt import hashpw, gensalt
 from functools import wraps
 from validate_email import validate_email
-import models, ipdb, re, datetime, random
+import models, re, datetime, random
+#import ipdb
 app = Flask(__name__)
 app.secret_key = '\x80\x7f\x14\xfe\x0eT\xe6y\xf8\xbff\xe78\xaf\x88~1\xc8\x95\xca&\x1dc!\xe7'
 random.seed()
